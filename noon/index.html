@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="robots" content="noindex">
+<title>Flicks on noon: concept demo</title>
+<link rel="icon" href="https://f.nooncdn.com/s/app/com/noon/icons/favicon_v4/favicon-32x32.png">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#eceef2;font-family:Noontree,"Helvetica Neue",Arial,sans-serif;color:#404553;-webkit-font-smoothing:antialiased}
+html[data-os=android] body{font-family:Noontree,Roboto,"Helvetica Neue",Arial,sans-serif}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+img{display:block}
+:root{--y:#FEEE00;--blue:#3866DF;--ink:#404553;--dark:#1d1d1f;--mute:#7e859b;--line:#e2e5f1;--green:#38ae04;--bg:#f7f7fa}
+.stage{height:100dvh;display:flex;align-items:center;justify-content:center;overflow:clip}
+.phone{position:relative;width:390px;height:844px;transform-origin:center center;flex:none;border-radius:54px;background:#000;padding:11px;box-shadow:0 0 0 2px #2a2a2c,0 30px 70px rgba(0,0,0,.28)}
+html[data-os=android] .phone{border-radius:40px}
+#app{position:relative;width:100%;height:100%;overflow:hidden;border-radius:44px;background:#fff;--fk-nav:64px;--fk-bg:rgba(29,29,31,.94);--fk-accent:#FEEE00;--fk-font:Noontree,"Helvetica Neue",Arial,sans-serif;display:flex;flex-direction:column}
+html[data-os=android] #app{border-radius:30px}
+/* status bar: phone frame only */
+.sb{flex:none;height:47px;background:var(--y);display:flex;align-items:center;justify-content:space-between;padding:0 30px 0 34px;font:600 15px -apple-system,"SF Pro Text",system-ui;color:#000;position:relative;z-index:30}
+.sb .isl{position:absolute;left:50%;top:11px;width:122px;height:34px;margin-left:-61px;border-radius:20px;background:#000}
+.sb svg{display:block}
+.sb .r{display:flex;gap:6px;align-items:center}
+html[data-os=android] .sb{height:34px;padding:0 22px;font:500 14px Roboto,system-ui}
+html[data-os=android] .sb .isl{width:12px;height:12px;top:11px;margin-left:-6px;border-radius:50%}
+.sb.dark{background:#000;color:#fff}
+/* views */
+.views{position:relative;flex:1;min-height:0;overflow:hidden}
+.view{position:absolute;inset:0;display:none;flex-direction:column;background:#fff}
+.view.on{display:flex}
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.scroll::-webkit-scrollbar{display:none}
+/* header */
+.hdr{flex:none;background:var(--y);padding:6px 16px 12px}
+.hdr .row1{display:flex;align-items:center;justify-content:space-between;height:40px}
+.hdr .logo{height:24px}
+.loc{display:flex;align-items:center;gap:5px;font-size:15px;color:var(--dark)}
+.loc .lbl{display:flex;flex-direction:column;line-height:1.1}
+.loc small{font-size:11px;color:#5d6276}
+.srow{display:flex;gap:10px;align-items:center;margin-top:6px}
+.search{flex:1;height:46px;border-radius:12px;background:#fff;border:1px solid #f0e000;display:flex;align-items:center;gap:10px;padding:0 14px;font-size:15px;color:#7e859b;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.search b{font-weight:400;color:var(--dark)}
+.heart{width:46px;height:46px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.hdr.sub{padding:6px 12px 10px}
+.hdr.sub .srow{margin-top:0}
+.back{width:36px;height:46px;display:flex;align-items:center;justify-content:center;flex:none}
+html[data-os=ios] .back .and,html[data-os=android] .back .ios{display:none}
+/* bottom nav */
+.nav{flex:none;height:64px;border-top:1px solid #eef0f5;background:#fff;display:flex;justify-content:space-around;align-items:stretch;padding-bottom:0;position:relative;z-index:20}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:12px;color:#404553;position:relative}
+.nav .ic{height:28px;width:52px;border-radius:14px;display:flex;align-items:center;justify-content:center}
+.nav .on{color:var(--blue);font-weight:600}
+.nav .on .ic{background:#e9eeff}
+.nav .deals img{width:34px;height:34px;margin-top:-6px}
+.badge{position:absolute;top:6px;left:50%;margin-left:6px;min-width:17px;height:17px;border-radius:9px;background:#e8001c;color:#fff;font-size:10.5px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px}
+.badge[hidden]{display:none}
+.hbar{flex:none;height:22px;background:#fff;display:flex;align-items:center;justify-content:center}
+.hbar i{width:134px;height:5px;border-radius:3px;background:#000}
+html[data-os=android] .hbar{height:16px}
+html[data-os=android] .hbar i{width:108px;height:4px;background:#bbb}
+/* home */
+.hero{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:14px 63px 18px;scrollbar-width:none}
+.hero::-webkit-scrollbar{display:none}
+.hcard{flex:none;width:264px;height:395px;border-radius:22px;overflow:hidden;scroll-snap-align:center;position:relative;background:#f2f2f2}
+.hcard>img{width:100%;height:100%;object-fit:cover}
+.hcard.flk{background:#0f0f10;display:flex;flex-direction:column}
+.hcard .band{flex:none;height:131px;padding:16px 18px 0;color:#fff;text-align:left;display:block;width:100%}
+.hcard .band .bw{font-weight:800;letter-spacing:.14em;font-size:12px;opacity:.85}
+.hcard .band h3{margin:6px 0 9px;font-size:24px;line-height:1.05;font-weight:800;letter-spacing:-.01em}
+.chip{display:inline-flex;align-items:center;gap:5px;background:var(--y);color:#111;border-radius:7px;padding:4px 8px;font-size:11.5px;font-weight:700}
+.hcard .flick{flex:none;width:264px;height:264px}
+.hdots{display:flex;gap:5px;justify-content:center;margin:-6px 0 12px}
+.hdots i{width:6px;height:6px;border-radius:3px;background:#d5d8e2}
+.hdots i.on{width:16px;background:#404553}
+.cats{display:grid;grid-auto-flow:column;grid-auto-columns:82px;gap:12px;overflow-x:auto;padding:4px 16px 6px;scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.cat{display:flex;flex-direction:column;align-items:center;gap:7px;font-size:12px;text-align:center;line-height:1.2;color:var(--dark)}
+.cat .t{width:82px;height:82px;border-radius:18px;background:#f2f4f8;overflow:hidden}
+.cat img{width:100%;height:100%;object-fit:cover}
+.finds-entry{margin:12px 16px 4px;display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:linear-gradient(90deg,#fff9b3,#fffde6);color:var(--dark)}
+.finds-entry .th{display:flex}
+.finds-entry .th img{width:38px;height:52px;border-radius:8px;object-fit:cover;border:2px solid #fff;margin-left:-10px;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.finds-entry .th img:first-child{margin-left:0}
+.finds-entry b{display:block;font-size:15px}
+.finds-entry small{font-size:12px;color:#5d6276}
+.sec{padding:18px 16px 4px;display:flex;justify-content:space-between;align-items:baseline}
+.sec h2{margin:0;font-size:19px;font-weight:700;color:var(--dark)}
+.sec a{font-size:13px;color:var(--blue);font-weight:600}
+.offers{display:flex;gap:10px;overflow-x:auto;padding:8px 16px;scrollbar-width:none}
+.offers::-webkit-scrollbar{display:none}
+.offers img{height:96px;width:auto;border-radius:12px;flex:none}
+.spot{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:8px 16px}
+.spot img{width:100%;aspect-ratio:156/234;object-fit:cover;border-radius:12px}
+.mid{padding:12px 16px}
+.mid img{width:100%;border-radius:12px}
+.strip{display:flex;gap:10px;overflow-x:auto;padding:8px 16px 14px;scrollbar-width:none}
+.strip::-webkit-scrollbar{display:none}
+.strip .pc{width:150px;flex:none}
+/* product card */
+.pc{display:block;text-align:left;color:var(--ink)}
+.pc .im{position:relative;background:#f7f7fa;border-radius:12px;overflow:hidden;aspect-ratio:3/4}
+.pc .im img{width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply}
+.pc .wl{position:absolute;right:8px;top:8px;width:30px;height:30px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.pc .ad{position:absolute;left:8px;bottom:8px;font-size:11px;color:#7e859b;background:rgba(255,255,255,.85);border-radius:4px;padding:1px 5px}
+.pc .yf{display:inline-block;margin-top:7px;background:#fff6b8;color:#1d1d1f;font-size:10.5px;font-weight:700;border-radius:4px;padding:2px 5px}
+.pc .nm{font-size:13px;line-height:1.3;margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:var(--dark)}
+.pc .rt{font-size:11.5px;color:#7e859b;margin-top:3px;display:flex;align-items:center;gap:3px}
+.pc .rt b{color:#1d1d1f;font-weight:600}
+.pc .pr{margin-top:4px;display:flex;align-items:baseline;gap:5px;flex-wrap:wrap}
+.pc .pr .now{font-size:16px;font-weight:700;color:var(--dark);display:inline-flex;align-items:center;gap:2px}
+.pc .pr s{font-size:12px;color:#7e859b}
+.pc .pr .off{font-size:12px;color:var(--green);font-weight:700}
+.pc .rk{font-size:11px;color:#7e859b;margin-top:3px}
+.dh{display:inline-block;width:.86em;height:.86em;vertical-align:-.08em}
+.xp{display:inline-block;background:#feee00;color:#1d1d1f;font-style:italic;font-weight:800;font-size:11px;border-radius:12px;padding:2px 8px;margin-top:5px}
+/* search */
+.ba{padding:14px 16px 12px;border-bottom:8px solid #f3f4f8;position:relative}
+.ba .top{display:flex;gap:14px}
+.ba .logo{width:76px;height:76px;flex:none;border:1px solid var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:900;font-size:11px;letter-spacing:.06em;color:#111;padding:4px;background:#fff}
+.ba h4{margin:4px 30px 0 0;font-size:16px;line-height:1.3;color:var(--dark);font-weight:700}
+.ba .shop{display:inline-flex;align-items:center;gap:3px;margin-top:10px;color:var(--blue);font-weight:600;font-size:15px}
+.adl{position:absolute;right:14px;top:12px;font-size:11px;color:#9ea3b4;background:#f3f4f8;border-radius:4px;padding:1px 6px}
+.ba .media{margin-top:12px;border-radius:12px;overflow:hidden}
+.ba .media .flick{width:100%;aspect-ratio:1/1}
+.ba .bstrip{display:flex;gap:10px;overflow-x:auto;margin-top:12px;scrollbar-width:none}
+.ba .bstrip::-webkit-scrollbar{display:none}
+.mini{flex:none;width:256px;display:flex;gap:10px;align-items:center;border:1px solid #eef0f5;border-radius:10px;padding:8px;text-align:left}
+.mini img{width:64px;height:84px;object-fit:cover;border-radius:6px;background:#f7f7fa}
+.mini .nm{font-size:12px;line-height:1.3;color:var(--dark);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mini .now{font-weight:700;font-size:15px;color:var(--dark);margin-top:6px;display:block}
+.rcount{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;font-size:14px;color:var(--ink)}
+.rcount b{color:var(--dark)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:0 16px 12px;scrollbar-width:none;border-bottom:1px solid #eef0f5}
+.chips::-webkit-scrollbar{display:none}
+.chips span{flex:none;height:34px;border:1px solid var(--line);border-radius:18px;padding:0 13px;display:flex;align-items:center;gap:6px;font-size:13.5px;color:var(--dark)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 10px;padding:12px 10px 20px}
+/* store */
+.store-hd{background:#0f0f10;color:#fff;padding:22px 18px 18px}
+.store-hd .bw{font-weight:900;letter-spacing:.12em;font-size:20px}
+.store-hd .v{display:flex;align-items:center;gap:6px;font-size:13px;opacity:.85;margin-top:6px}
+.store-hd p{margin:12px 0 0;font-size:14px;opacity:.9}
+.tabs{display:flex;gap:22px;padding:12px 16px 0;border-bottom:1px solid #eef0f5;font-size:14px}
+.tabs span{padding-bottom:10px}
+.tabs .on{color:var(--dark);font-weight:700;border-bottom:2px solid var(--dark)}
+/* pdp */
+.gal{position:relative;background:#f7f7fa;height:440px}
+.gal .track{display:flex;height:100%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.gal .track::-webkit-scrollbar{display:none}
+.gal .track img{flex:none;width:100%;height:100%;object-fit:contain;scroll-snap-align:center;mix-blend-mode:multiply}
+.gal .gb{position:absolute;top:12px;width:40px;height:40px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.gal .dots{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:#fff;border-radius:10px;padding:5px 8px;display:flex;gap:4px}
+.gal .dots i{width:6px;height:6px;border-radius:3px;background:#d0d3dc}
+.gal .dots i.on{width:14px;background:#404553}
+.brow{margin:12px 16px 0;background:#eef3ff;border-radius:10px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;font-size:14px}
+.brow b{display:flex;align-items:center;gap:6px;color:var(--dark)}
+.brow a{color:var(--blue);font-weight:600}
+.pdp-b{padding:12px 16px 0}
+.pdp-b h1{font-size:17px;font-weight:400;line-height:1.35;color:var(--dark);margin:0}
+.pdp-b .rt{margin-top:8px;font-size:13px;display:flex;gap:6px;align-items:center}
+.pdp-b .rt b{background:var(--green);color:#fff;border-radius:6px;padding:1px 6px;font-size:12px}
+.pdp-b .price{margin-top:12px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.pdp-b .price .now{font-size:24px;font-weight:700;color:var(--dark);display:inline-flex;align-items:center;gap:2px}
+.pdp-b .price s{color:#7e859b;font-size:14px}
+.pdp-b .price .off{color:var(--green);font-weight:700;font-size:14px}
+.pdp-b .vat{font-size:12px;color:#7e859b}
+.dlv{margin:14px 16px 0;border:1px solid #eef0f5;border-radius:12px;padding:12px;font-size:13px;display:flex;gap:10px;align-items:center}
+.sizes{padding:16px 16px 0}
+.sizes .h{display:flex;justify-content:space-between;font-size:13px;font-weight:700;color:var(--dark)}
+.sizes .h a{color:var(--blue);font-weight:600}
+.sizes .s{display:flex;gap:8px;overflow-x:auto;margin-top:10px;scrollbar-width:none}
+.sizes .s button{flex:none;height:40px;min-width:62px;border:1px solid var(--line);border-radius:10px;font-size:13px;color:var(--dark)}
+.sizes .s button.on{border:2px solid var(--dark);font-weight:700}
+.pbanner{margin:16px 16px 0}
+.pbanner img{width:100%;border-radius:12px}
+.pcard{margin:16px 16px 0;border:1px solid #eef0f5;border-radius:16px;padding:14px;position:relative}
+.pcard .top{display:flex;gap:12px;align-items:center}
+.pcard .logo{width:64px;height:64px;flex:none;border:1px solid var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;letter-spacing:.06em;color:#111}
+.pcard h4{margin:0 30px 0 0;font-size:16px;color:var(--dark)}
+.pcard .shop{display:inline-flex;margin-top:6px;color:var(--blue);font-weight:600;font-size:15px}
+.pcard .media{margin-top:12px;border-radius:12px;overflow:hidden}
+.pcard .media .flick{width:100%;aspect-ratio:1/1}
+.pcard .mini{width:100%;margin-top:10px}
+.atc{flex:none;display:flex;gap:10px;padding:10px 12px;border-top:1px solid #eef0f5;background:#fff}
+.atc .qty{width:52px;height:48px;border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;color:#7e859b}
+.atc .qty b{font-size:15px;color:var(--dark)}
+.atc .add{flex:1;height:48px;border-radius:10px;background:var(--blue);color:#fff;font-weight:700;font-size:15px}
+/* finds */
+#v-finds{background:#000}
+.ftop{position:absolute;left:0;right:0;top:0;z-index:5;display:flex;align-items:center;gap:6px;padding:10px 12px;color:#fff;background:linear-gradient(#0009,#0000)}
+.ftop b{font-size:17px}
+.ftop .back svg path{stroke:#fff}
+.fscroll{flex:1;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none}
+.fscroll::-webkit-scrollbar{display:none}
+.fitem{position:relative;height:100%;scroll-snap-align:start;scroll-snap-stop:always;background:#000}
+.fitem .flick{position:absolute;inset:0 0 118px 0;background:#000}
+.frail{position:absolute;right:10px;bottom:176px;display:flex;flex-direction:column;gap:18px;align-items:center;color:#fff;font-size:12px;z-index:3}
+.frail span{display:flex;flex-direction:column;align-items:center;gap:3px}
+.fcard{position:absolute;left:10px;right:10px;bottom:12px;height:94px;border-radius:14px;background:#fff;display:flex;gap:10px;align-items:center;padding:8px;z-index:3;text-align:left}
+.fcard img{width:62px;height:78px;border-radius:8px;object-fit:cover;background:#f7f7fa}
+.fcard .t{flex:1;min-width:0}
+.fcard .t .nm{font-size:13px;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fcard .t .by{font-size:11.5px;color:#7e859b}
+.fcard .t .now{font-weight:700;font-size:16px;color:var(--dark);display:inline-flex;align-items:center;gap:2px;margin-top:3px}
+.fcard .go{height:38px;padding:0 14px;border-radius:9px;background:var(--blue);color:#fff;font-weight:700;font-size:13px;flex:none}
+.fseller{position:absolute;left:14px;bottom:176px;color:#fff;z-index:3;font-size:13px;max-width:70%;text-shadow:0 1px 3px #0008}
+.fseller b{display:block;font-size:14px}
+/* sheet + toast */
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.35);z-index:60;display:none}
+.scrim.on{display:block}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:18px 18px 0 0;padding:10px 16px 18px;z-index:61;transform:translateY(105%);transition:transform .28s ease}
+.sheet.on{transform:none}
+.sheet .grab{width:40px;height:4px;border-radius:2px;background:#d5d8e2;margin:0 auto 12px}
+.sheet .row{display:flex;gap:12px}
+.sheet .row img{width:92px;height:118px;object-fit:cover;border-radius:10px;background:#f7f7fa}
+.sheet .nm{font-size:14px;color:var(--dark);line-height:1.35}
+.sheet .now{font-size:20px;font-weight:700;color:var(--dark);display:inline-flex;align-items:center;gap:2px;margin-top:6px}
+.sheet .add{margin-top:14px;width:100%;height:48px;border-radius:10px;background:var(--blue);color:#fff;font-weight:700;font-size:15px}
+.sheet .more{margin-top:8px;width:100%;height:42px;color:var(--blue);font-weight:600}
+.toast{position:absolute;left:12px;right:12px;top:12px;z-index:70;background:#1d1d1f;color:#fff;border-radius:12px;padding:12px 14px;font-size:14px;display:flex;justify-content:space-between;align-items:center;opacity:0;transform:translateY(-10px);transition:.25s;pointer-events:none}
+.toast.on{opacity:1;transform:none;pointer-events:auto}
+.toast a{color:var(--y);font-weight:700}
+/* full screen on phones */
+@media (max-width:760px){
+  .stage{padding:0;display:block}
+  .phone{width:100%;height:100dvh;transform:none!important;border-radius:0!important;padding:0;box-shadow:none;background:#fff}
+  #app{border-radius:0!important}
+  .sb{height:env(safe-area-inset-top,0px);padding:0}
+  .sb>*{display:none!important}
+  .hbar{height:env(safe-area-inset-bottom,0px)}
+  .hbar i{display:none}
+}
+</style>
+</head>
+<body>
+<div class="stage"><div class="phone"><div id="app">
+  <div class="sb" id="sb"><span id="clk">9:41</span><div class="isl"></div><div class="r">
+    <svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+    <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 2.6c2.2 0 4.2.9 5.7 2.3l1.1-1.1A9.6 9.6 0 0 0 8 1 9.6 9.6 0 0 0 1.2 3.8l1.1 1.1A8 8 0 0 1 8 2.6Zm0 3.2c1.3 0 2.5.5 3.4 1.3l1.1-1.1A6.4 6.4 0 0 0 8 4.2c-1.7 0-3.3.7-4.5 1.8l1.1 1.1c.9-.8 2.1-1.3 3.4-1.3Zm0 3.2c-.5 0-1 .2-1.3.5L8 11l1.3-1.5C9 9.2 8.5 9 8 9Z"/></svg>
+    <svg width="27" height="13" viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="20" height="9" rx="2"/><path d="M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2Z" opacity=".4"/></svg>
+  </div></div>
+  <div class="views">
+    <!-- HOME -->
+    <section class="view on" id="v-home">
+      <div class="hdr">
+        <div class="row1"><img class="logo" src="https://f.nooncdn.com/s/app/com/noon/design-system/logos/revamp-logo-en-smaller.svg" alt="noon">
+          <div class="loc"><img src="https://f.nooncdn.com/s/app/com/noon/icons/address/Home_Header.svg" width="22" height="22" alt=""><div class="lbl"><small>Deliver to</small>Dubai Marina</div><img src="https://f.nooncdn.com/s/app/com/noon/icons/framed-chevron-down.svg" width="16" height="16" alt=""></div></div>
+        <div class="srow"><button class="search" data-t="home-search" onclick="go('search',{q:'under armour'})"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1d1d1f" stroke-width="2.2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="7"/><path d="m20 20-4.5-4.5"/></svg><span>Search “Running shoes”</span></button><span class="heart"><svg width="22" height="22" viewBox="0 0 24 24"><path fill="#e8001c" d="M12 21s-7.5-4.6-10-9.3C.3 8.4 2.2 4 6.3 4c2.3 0 3.9 1.3 4.7 2.7h2C13.8 5.3 15.4 4 17.7 4 21.8 4 23.7 8.4 22 11.7 19.5 16.4 12 21 12 21Z"/></svg></span></div>
+      </div>
+      <div class="scroll" id="home-scroll">
+        <div class="hero" id="hero"></div>
+        <div class="hdots" id="hdots"></div>
+        <div class="cats" id="cats"></div>
+        <button class="finds-entry" data-t="finds-entry" onclick="openFinds(0)"><span class="th" id="fthumbs"></span><span style="text-align:left"><b>noon finds</b><small>Shoppable videos from brands you love</small></span><svg style="margin-left:auto" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d1d1f" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>
+        <div class="sec"><h2>Offers for you</h2></div>
+        <div class="offers">
+          <img src="https://a.nooncdn.com/mpcms/EN0001/assets/b4ed406b-348c-4567-902c-fdab0dd0efbb.png?width=480" alt="Welcome offer">
+          <img src="https://a.nooncdn.com/mp-onsite/images/img_496xomip-en_mb_uae-coupon-01.png?width=480" alt="Coupon">
+          <img src="https://a.nooncdn.com/mpcms/EN0001/assets/e61fd7dd-9014-4bd4-bcd9-77520a9dcdbe.png?width=480" alt="Laptops coupon">
+          <img src="https://a.nooncdn.com/mpcms/EN0001/assets/1786eb29-e2f9-4e3a-9a5d-d99fb0e98ac0.png?width=480" alt="Sports coupon">
+        </div>
+        <div class="sec"><h2>Early Yellow Friday deals</h2><a>View all</a></div>
+        <div class="strip" id="yf"></div>
+        <div class="sec"><h2>In the spotlight</h2></div>
+        <div class="spot">
+          <img src="https://a.nooncdn.com/mpcms/EN0001/assets/a887c5b0-50f0-4ee1-b79f-cc4f8d23591d.png?width=480" alt="Beauty">
+          <img src="https://a.nooncdn.com/mpcms/EN0001/assets/21a8ce14-fd7e-474b-9c2e-74ea216d60a4.png?width=480" alt="Home and kitchen">
+          <img src="https://a.nooncdn.com/mpcms/EN0001/assets/2e34cd48-dbce-40a5-8e71-1f6f69e704f1.png?width=480" alt="Electronics">
+        </div>
+        <div class="mid"><img src="https://a.nooncdn.com/mpcms/EN0001/assets/2add32be-83fc-4d79-aff1-883d34be44e5.png?width=800" alt="Big baby bonanza"></div>
+        <div class="sec"><h2>Sports & outdoor</h2><a>View all</a></div>
+        <div class="strip" id="sp"></div>
+        <div style="height:24px"></div>
+      </div>
+    </section>
+    <!-- SEARCH -->
+    <section class="view" id="v-search">
+      <div class="hdr sub"><div class="srow"><button class="back" data-t="back" onclick="back()"><svg class="ios" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1d1f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg><svg class="and" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1d1f" stroke-width="2.2" stroke-linecap="round"><path d="M20 12H5m6-7-7 7 7 7"/></svg></button><div class="search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1d1d1f" stroke-width="2.2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="7"/><path d="m20 20-4.5-4.5"/></svg><b id="sq">under armour</b></div></div></div>
+      <div class="scroll" id="search-scroll">
+        <div class="ba" data-flow="search">
+          <span class="adl">Ad</span>
+          <div class="top"><div class="logo">UNDER<br>ARMOUR</div><div><h4>Built for the Dubai heat. HeatGear in every colour.</h4><button class="shop" data-t="ba-shop" onclick="go('store',{b:'ua'})">Shop Under Armour <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 6 6 6-6 6"/></svg></button></div></div>
+          <div class="media"><div class="flick" data-slot="search-ua" data-brand="ua" data-cta="native"></div></div>
+          <div class="bstrip" id="ba-strip"></div>
+        </div>
+        <div class="rcount"><span>480+ Results for <b>“under armour”</b></span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#404553" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></div>
+        <div class="chips"><span>Filter</span><span>Sort</span><span>Deals ⌄</span><span>Size ⌄</span><span>Brand ⌄</span><span>Men's Active Tees</span></div>
+        <div class="grid" id="sgrid"></div>
+      </div>
+    </section>
+    <!-- STORE -->
+    <section class="view" id="v-store">
+      <div class="hdr sub"><div class="srow"><button class="back" onclick="back()" data-t="back"><svg class="ios" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1d1f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg><svg class="and" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1d1f" stroke-width="2.2" stroke-linecap="round"><path d="M20 12H5m6-7-7 7 7 7"/></svg></button><div class="search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1d1d1f" stroke-width="2.2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="7"/><path d="m20 20-4.5-4.5"/></svg><span id="stq">Search in store</span></div></div></div>
+      <div class="scroll" id="store-scroll"><div class="store-hd"><div class="bw" id="st-word"></div><div class="v"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="#3866DF" d="M12 1.5 14.7 4l3.6-.4.8 3.5 3.2 1.8-1.5 3.3 1.5 3.3-3.2 1.8-.8 3.5-3.6-.4L12 22.5 9.3 20l-3.6.4-.8-3.5-3.2-1.8L3.2 12 1.7 8.7l3.2-1.8.8-3.5 3.6.4Z"/><path d="m8 12 3 3 5-6" stroke="#fff" stroke-width="2" fill="none"/></svg><span>Official store on noon</span></div><p id="st-head"></p></div>
+        <div class="tabs"><span class="on">All products</span><span>Yellow Friday</span><span>Bestsellers</span><span>New</span></div>
+        <div class="grid" id="st-grid"></div></div>
+    </section>
+    <!-- PDP -->
+    <section class="view" id="v-pdp">
+      <div class="scroll" id="pdp-scroll">
+        <div class="gal"><div class="track" id="gtrack"></div>
+          <button class="gb" style="left:12px" data-t="back" onclick="back()"><svg class="ios" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1d1d1f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg></button>
+          <span class="gb" style="right:62px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1d1d1f" stroke-width="1.8"><path d="M12 20s-7-4.3-9.3-8.7C1.2 8.3 3 4.5 6.6 4.5c2 0 3.5 1.1 4.3 2.4h2.2c.8-1.3 2.3-2.4 4.3-2.4 3.6 0 5.4 3.8 3.9 6.8C19 15.7 12 20 12 20Z"/></svg></span>
+          <span class="gb" style="right:12px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1d1d1f" stroke-width="1.8" stroke-linecap="round"><path d="M12 15V3m-4 4 4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg></span>
+          <div class="dots" id="gdots"></div></div>
+        <div class="brow"><b><svg width="16" height="16" viewBox="0 0 24 24"><path fill="#3866DF" d="M12 1.5 14.7 4l3.6-.4.8 3.5 3.2 1.8-1.5 3.3 1.5 3.3-3.2 1.8-.8 3.5-3.6-.4L12 22.5 9.3 20l-3.6.4-.8-3.5-3.2-1.8L3.2 12 1.7 8.7l3.2-1.8.8-3.5 3.6.4Z"/><path d="m8 12 3 3 5-6" stroke="#fff" stroke-width="2" fill="none"/></svg><span id="pd-brand"></span></b><a data-t="pdp-store" onclick="go('store',{b:CUR.b})">Visit Store ›</a></div>
+        <div class="pdp-b"><h1 id="pd-name"></h1><div class="rt" id="pd-rt"></div><div class="price" id="pd-price"></div><div class="vat">(incl. of VAT)</div><span class="yf" id="pd-tag" style="display:inline-block;margin-top:8px;background:#fff6b8;font-size:12px;font-weight:700;border-radius:4px;padding:3px 6px;color:#1d1d1f"></span></div>
+        <div class="dlv"><span class="xp" style="margin:0">express</span><span>Get it in <b>1 hr 5 mins</b> to Dubai Marina</span></div>
+        <div class="sizes"><div class="h"><span>SIZE</span><a>SIZE GUIDE</a></div><div class="s" id="pd-sizes"></div></div>
+        <div class="pbanner"><img src="https://a.nooncdn.com/mpcms/EN0001/assets/b4ed406b-348c-4567-902c-fdab0dd0efbb.png?width=800" alt="Welcome offer" style="max-height:110px;object-fit:cover"></div>
+        <div class="pcard" data-flow="pdp">
+          <span class="adl">Ad</span>
+          <div class="top"><div class="logo">LEVI'S</div><div><h4>The fit is in the details</h4><button class="shop" data-t="pdp-ba-shop" onclick="go('store',{b:'levis'})">Shop Levi's ›</button></div></div>
+          <div class="media"><div class="flick" data-slot="pdp-levis" data-brand="levis" data-cta="native"></div></div>
+          <button class="mini" id="pd-ba-mini" data-t="pdp-ba-product"></button>
+        </div>
+        <div class="sec"><h2>Frequently bought together</h2></div>
+        <div class="strip" id="fbt"></div>
+        <div style="height:16px"></div>
+      </div>
+      <div class="atc"><div class="qty">Qty<b>1</b></div><button class="add" data-t="add-to-cart" onclick="addToCart(CUR)">Add to cart</button></div>
+    </section>
+    <!-- FINDS -->
+    <section class="view" id="v-finds">
+      <div class="ftop"><button class="back" data-t="back" onclick="back()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg></button><b>noon finds</b></div>
+      <div class="fscroll" id="fscroll"></div>
+    </section>
+    <div class="scrim" id="scrim" onclick="closeSheet()"></div>
+    <div class="sheet" id="sheet"></div>
+    <div class="toast" id="toast" data-t="toast"><span>Added to cart</span><a>View cart</a></div>
+  </div>
+  <nav class="nav" id="nav">
+    <button class="on" data-tab="home" onclick="go('home')"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7V20a1 1 0 0 1-1 1h-5v-6h-5v6h-5a1 1 0 0 1-1-1Z"/></svg></span>Home</button>
+    <button data-tab="cats"><span class="ic"><img src="https://f.nooncdn.com/s/app/com/noon/images/bottomNav/categories.png" width="22" height="22" alt=""></span>Categories</button>
+    <button class="deals"><img src="https://f.nooncdn.com/s/app/com/noon/images/bottomNav/dynamic/deals-box/deals-box@3x.png" alt="">Deals</button>
+    <button data-tab="acc"><span class="ic"><img src="https://f.nooncdn.com/s/app/com/noon/icons/header/Profile_Header_lg.svg" width="22" height="22" alt=""></span>Account</button>
+    <button data-tab="cart"><span class="ic"><img src="https://f.nooncdn.com/s/app/com/noon/icons/header/Cart_Header.svg" width="22" height="22" alt=""></span>Cart<span class="badge" id="cartn" hidden>0</span></button>
+  </nav>
+  <div class="hbar" id="hbar"><i></i></div>
+</div></div></div>
+
+<script>
+const F='https://f.nooncdn.com/p/pzsku/', A='https://a.nooncdn.com/mpcms/EN0001/assets/';
+const P={
+ nike1:{b:'nike',brand:'Nike',name:"Revolution 8 Men's Running Shoes",img:[F+'ZA133E7D109B839C34173Z/45/_/1776169841/986048d7-a4c6-4aa6-83b0-9651b832eb76.jpg',F+'ZA133E7D109B839C34173Z/45/_/1776169841/640479cd-1e47-42e2-b32b-0b2b565d03a3.jpg',F+'ZA133E7D109B839C34173Z/45/_/1776169842/0af5307b-8494-407a-bfe0-57c9a80eaa64.jpg'],p:201,was:349,r:4.5,n:78,tag:'Early Yellow Friday Deal',rank:"#36 in Men's Cross-Training Shoes"},
+ nike2:{b:'nike',brand:'Nike',name:'Run Defy',img:[F+'Z70B41C04427A067A9CECZ/45/_/1776094511/e0c81ec7-bef2-4a7a-92c4-2b44c3910826.jpg',F+'Z70B41C04427A067A9CECZ/45/_/1776094512/77573afe-f2cc-4386-982c-6b2cef179032.jpg'],p:132,was:329,r:4.3,n:245,tag:'Early Yellow Friday Deal',rank:'Selling out fast'},
+ nike3:{b:'nike',brand:'Nike',name:'Revolution 8',img:[F+'ZABD6065EEB1DCC782156Z/45/_/1776094502/d4994151-3dea-4dc7-9738-c87f02cbc5f6.jpg',F+'ZABD6065EEB1DCC782156Z/45/_/1776094502/c6c3a87a-9380-4741-b8ae-e9a0883b97e1.jpg'],p:158,was:329,r:4.3,n:294,tag:'Deal',rank:"#3 in Men's Cross-Training Shoes"},
+ nike4:{b:'nike',brand:'Nike',name:'P-6000 CN Sneakers for Men - Spruce',img:[F+'ZFBB9AE4198181677FC77Z/45/_/1774518781/84f6abb4-f0bd-49c3-83f6-28f165653597.jpg',F+'ZFBB9AE4198181677FC77Z/45/_/1774518781/1f19a75b-3e72-4f5a-9bee-04f709c6e23b.jpg'],p:259,was:629,r:3.5,n:19,tag:'Early Yellow Friday Deal',rank:'Only 1 left in stock'},
+ nike5:{b:'nike',brand:'Nike',name:'P-6000 Prm Cordura Trainers for Men',img:[F+'ZA4304D4669DF1CDDF7F6Z/45/_/1774518780/3ba48641-95b7-4175-92a6-c7944190fedc.jpg'],p:219,was:629,r:4.3,n:10,tag:'Early Yellow Friday Deal'},
+ nike6:{b:'nike',brand:'Nike',name:'Reax 8 Tr Mesh Silver Training Shoes for Men',img:[F+'Z513EEF1B5EB9C65BBAD1Z/45/_/1772188141/16aacccf-23aa-48d5-852c-6f9b68f25bd6.jpg'],p:169,was:449,r:4.5,n:8,tag:'Early Yellow Friday Deal',rank:'Lowest price in 30 days'},
+ ua1:{b:'ua',brand:'UNDER ARMOUR',name:'Heatgear Armour Compression Long Sleeve Top',img:[F+'Z2C82906FF1D96274BDCDZ/45/_/1724878269/4c534ec6-507a-4d9a-bd85-0710546c3925.jpg',F+'Z2C82906FF1D96274BDCDZ/45/_/1724878270/90fe2e1a-2a99-4d9f-9265-5cb9484f5fdc.jpg'],p:127,was:199,r:4.7,n:118,tag:'Early Yellow Friday Deal'},
+ ua2:{b:'ua',brand:'UNDER ARMOUR',name:'HEATGEAR Comp SS',img:[F+'Z802AB47127A8D0B0AF2FZ/45/_/1773138412/06f5cce4-94cc-48bb-8ecb-bda93ceb3f1b.jpg',F+'Z802AB47127A8D0B0AF2FZ/45/_/1773138412/ae42237e-8b60-4119-a7a5-d8353fcc87bd.jpg'],p:179,r:4.7,n:38},
+ ua3:{b:'ua',brand:'UNDER ARMOUR',name:'Team Wordmark Printed T-Shirt',img:[F+'ZB0DE225C1ED133876F0DZ/45/_/1773138562/7b94b9f9-2cca-4671-a4b8-ba1a42e31e8d.jpg',F+'ZB0DE225C1ED133876F0DZ/45/_/1773138561/89ede866-eef2-416d-a770-39b4f4981236.jpg'],p:129,r:4.6,n:86,rank:'#1 in Men Active Tees'},
+ ua4:{b:'ua',brand:'UNDER ARMOUR',name:'Left Chest Logo T-Shirt',img:[F+'Z96E43058BEB8871A14DBZ/45/_/1773138524/04a924df-3d54-4258-b2df-4fac6e01a60a.jpg'],p:71,was:129,r:4.2,n:87,tag:'Early Yellow Friday Deal'},
+ ua5:{b:'ua',brand:'UNDER ARMOUR',name:'Sportstyle Lc T-Shirt',img:[F+'Z46C0C8F5BE57E729AB17Z/45/_/1779105444/ed1040d2-aaf1-4672-8a2e-cc17c704909f.jpg'],p:93,was:129,r:4.2,n:87,tag:'Early Yellow Friday Deal'},
+ ua6:{b:'ua',brand:'UNDER ARMOUR',name:'Youth Sportstyle Lc T-Shirt',img:[F+'ZA39EEE830A8814316A77Z/45/_/1779105141/9a218e53-b67d-4cc4-a516-618a8c8bbb0e.jpg'],p:79,r:4.4,n:21,rank:"#50 in Boy's T-shirts"},
+ lev1:{b:'levis',brand:"Levi's",name:'505 Faded Straight Fit Jeans',img:[F+'Z28C6BDE5098530F49F33Z/45/1763616347/3fd276b6-1ae2-44bd-af8e-ac93cd981aad.jpg'],p:199,was:399,r:5.0,n:2},
+ lev2:{b:'levis',brand:"Levi's",name:'Le 511 Slim Fit Jeans',img:[F+'Z966E78877650D74DA6B2Z/45/1761717198/c9625266-4ac2-40c1-81be-7666915f765a.jpg'],p:269,was:499,r:5.0,n:1},
+ lev3:{b:'levis',brand:"Levi's",name:'510 Skinny Fit Jeans',img:[F+'ZB5412434335B0EB473DAZ/45/1763616345/e730b4d8-e912-4d58-8054-e4128589a2ba.jpg'],p:169,was:349,r:4.5,n:2,rank:'Lowest price in 7 days'},
+ lev4:{b:'levis',brand:"Levi's",name:"505 Regular Fit Men's Jeans",img:[F+'Z750F00D560DDEF94B89CZ/45/1763616345/258289f7-33e0-42d8-8ac7-4e4e9e2fcb40.jpg'],p:239,was:399},
+ lev5:{b:'levis',brand:"Levi's",name:'Straight Fit Mid Rise Jeans',img:[F+'Z1099A67E3BD26A1E79ECZ/45/1754412609/c7fff213-c333-48bd-bd39-ca7937b6eb3b.jpg',F+'Z1099A67E3BD26A1E79ECZ/45/1754412634/fdb87752-fff6-418e-a16a-a87b02b1de60.jpg'],p:202,was:449,rank:'Lowest price in a year'},
+ lev6:{b:'levis',brand:"Levi's",name:'LVB 511 Eco-Soft Performance Jeans',img:[F+'ZFB7D3AAE63D7CF3B299AZ/45/_/1782737031/efa9e55e-b351-4eef-bdf8-0c36c0fa6d7f.jpg'],p:99,was:199},
+ acer1:{b:'acer',brand:'Acer',name:'Aspire Lite Laptop, 15.6 Inch FHD, Core Ultra 5 115U, 16GB RAM, 512GB SSD, Windows 11 Home, Silver',img:[F+'Z9C206EF3A86AF9B5F12EZ/45/_/1782818164/7c75f0da-d156-41ce-b6e8-f062f00a5c32.jpg',F+'Z9C206EF3A86AF9B5F12EZ/45/_/1779791571/9ef388fd-cc80-4ea0-b568-b437b2cf92bc.jpg'],p:2635,was:3599,r:5.0,n:3,rank:'Get in 1 hr 11 mins'},
+ acer2:{b:'acer',brand:'Acer',name:'Aspire Lite Laptop, 15.6 Inch FHD, Core 5 120U, 16GB RAM DDR5, 512GB SSD, Windows 11 Home, Light Silver',img:[F+'Z6CFC7569327F4D77B823Z/45/_/1779791049/8dc3477a-615f-4147-ba0c-8879e9dbd10b.jpg'],p:2972,was:3499,r:4.8,n:9,rank:'Only 1 left in stock'},
+ acer3:{b:'acer',brand:'Acer',name:'Aspire Go Laptop, 15.6 Inch FHD, Intel N100, 4GB RAM, 128GB UFS, Windows 11 Home, Silver',img:[F+'Z0C8108C994B7621BB47FZ/45/_/1779791587/d7aaf315-6fac-4c8d-ad7c-ee4bc731c872.jpg'],p:1499,was:1949},
+ anta1:{b:'anta',brand:'ANTA',name:'GAZELLE | Long-Distance Performance Running Shoes',img:[F+'Z4A20FA3E56F38D9C5AEAZ/45/_/1771917962/cfcf4ac5-dd08-4d0f-8fea-584554fe8c6e.jpg'],p:149,was:339,rank:"#22 in Men's Running Shoes"},
+ anta2:{b:'anta',brand:'ANTA',name:"C202 7 Men's Running Shoes",img:[F+'Z1A4EB36A48F805855CDDZ/45/_/1785829412/6944cd1a-bfd9-4465-ae9b-4013230b4e65.jpg'],p:549,rank:"#33 in Men's Running Shoes"},
+ adi1:{b:'adidas',brand:'Adidas',name:"Men's Galaxy 7 Running Shoes",img:[F+'Z56A1835A37E7CD51A8F1Z/45/1760462344/5f28944b-dbed-478f-9b7f-34b67b9679e1.jpg'],p:155,was:259,r:4.5,n:65,tag:'Early Yellow Friday Deal',rank:"#1 in Men's Running Shoes"},
+};
+const BRAND={nike:{name:'Nike',word:'NIKE',head:'Run the city in colour',sub:'Yellow Friday picks from Nike',items:['nike1','nike2','nike3','nike4','nike5','nike6']},
+ ua:{name:'Under Armour',word:'UNDER ARMOUR',head:'Built for the Dubai heat',items:['ua1','ua2','ua3','ua4','ua5','ua6']},
+ levis:{name:"Levi's",word:"LEVI'S",head:'The fit is in the details',items:['lev1','lev2','lev3','lev4','lev5','lev6']},
+ acer:{name:'Acer',word:'acer',head:'Aspire, made for every day',items:['acer1','acer2','acer3']},
+ zara:{name:'Zara',word:'ZARA',head:'New season looks',items:[]}};
+const CATS=[['99f91df4-3b3a-4d7f-a801-c5705f77d6ab','Deals'],['46f816d1-e3e8-4be7-91cc-a3e2aad7c23a','Electronics'],['8aff7fd3-17dc-47b4-9386-87b34dbde27e','Laptops & Desktops'],['08cf6970-47bd-4670-8ef1-e57a2684d599','Gift Cards'],['f4d00f29-592e-4fba-a757-4a952927d7ca','Mobiles'],['edfe943a-78e2-4559-bbba-cae85f8cbe81','Beauty'],['bb42e6a7-9abb-4ae0-83b9-6bf6f140a29d','Women'],['a92f7730-a794-440c-ba5e-d67d13a4a63d','Men'],['035fb973-b57c-4dad-a803-d88d2571227b','Toys'],['f9cc5e3e-d090-44f5-9bf3-64de35ecf7b9','Grocery']];
+</script>
+<script>
+/* Flicks Demo Kit v1.1. Copy verbatim into every demo. Platform code lives outside this block. */
+(function(){
+const Q=new URLSearchParams(location.search),UA=navigator.userAgent;
+const OS=Q.get('os')||(/Android/i.test(UA)?'android':'ios'),STUB=Q.get('flicks')==='stub';
+document.documentElement.dataset.os=OS;
+const HEAD='<!doctype html>\n<meta charset=utf-8>\n<meta name=ad.orientation content=portrait,landscape>\n<script>var ExitApi=window.ExitApi||{exit:function(){}},clickTag="${CLICK_URL_UNESC}";<\/script>\n';
+const EXTRA={
+dv360:'<script>window.AD_CONFIG=window.AD_CONFIG||{};window.AD_CONFIG.dsp="dv360_studio";window.AD_CONFIG.publisherInfo={"publisher_id":"${PUBLISHER_ID}","adsxt_publisher_id":"${ADSXT_PUBLISHER_ID}","universal_site_id":"${UNIVERSAL_SITE_ID}","source_url":"${SOURCE_URL}","source_url_enc":"${SOURCE_URL_ENC}","adsxt_ad_system_domain":"${ADSXT_AD_SYSTEM_DOMAIN}"};window.AD_CONFIG.clickTracker={"mode":"exit","template":""};<\/script>\n',
+house:'<script>window.AD_CONFIG=window.AD_CONFIG||{};window.AD_CONFIG.dsp="house";window.AD_CONFIG.clickTracker={"mode":"exit","template":""};<\/script>\n',
+fonts:String.raw`<script>(function(){var seen={},head=document.head||document.documentElement,until=Date.now()+3e4;function add(css){if(seen[css])return;seen[css]=1;var s=document.createElement("style");s.setAttribute("data-vertex-fonts","");s.textContent=css;head.appendChild(s)}function scan(){try{var ps=document.getElementsByTagName("vertex-player");for(var i=0;i<ps.length;i++){var r=ps[i].shadowRoot;if(!r)continue;var n=r.querySelectorAll("style,link[rel=stylesheet]");for(var j=0;j<n.length;j++){var el=n[j];if(el.tagName==="LINK"){if(/fonts\.googleapis\.com/.test(el.href)&&!seen[el.href]){seen[el.href]=1;var l=document.createElement("link");l.rel="stylesheet";l.href=el.href;head.appendChild(l)}continue}var m=(el.textContent||"").match(/@font-face\s*\{[^}]*\}/g);if(m)add(m.join(""))}}}catch(e){}if(Date.now()<until)setTimeout(scan,250)}scan()})();<\/script>`+'\n'};
+const SIZE={tall:[360,640],wide:[560,420],square:[540,540]};
+/* Runs inside each Flick's iframe, before the tag. Reports ready, errors, variant switches and click-outs to the page. */
+function bridge(S,hideCta){
+  var av=function(s){return /av01|av1/i.test(String(s||''))};
+  try{if(window.VideoDecoder&&VideoDecoder.isConfigSupported){var o=VideoDecoder.isConfigSupported.bind(VideoDecoder);VideoDecoder.isConfigSupported=function(q){return q&&av(q.codec)?Promise.resolve({supported:false,config:q}):o(q)}}}catch(e){}
+  try{var mc=navigator.mediaCapabilities;if(mc&&mc.decodingInfo){var od=mc.decodingInfo.bind(mc);mc.decodingInfo=function(q){return q&&q.video&&av(q.video.contentType)?Promise.resolve({supported:false,smooth:false,powerEfficient:false}):od(q)}}}catch(e){}
+  function t(m){m.flam=1;m.slot=S;try{parent.postMessage(m,'*')}catch(e){}}
+  window.__vxOpen=function(u){t({type:'cta',url:u||''});return true};
+  window.ExitApi={exit:function(n,u){t({type:'cta',url:u||''})}};
+  window.open=function(u){t({type:'cta',url:String(u||'')});return null};
+  document.addEventListener('click',function(e){var a=e.target&&e.target.closest&&e.target.closest('a[target=_blank]');if(a){e.preventDefault();t({type:'cta',url:a.href})}},true);
+  function root(){var v=document.querySelector('vertex-player');return v&&v.shadowRoot}
+  /* Variant buttons and CTAs can render after the player says it is ready, and the shadow root can attach late,
+     so the CTA rule and the variant count are re-checked for a while instead of once. */
+  function count(){var r=root();return r?r.querySelectorAll('button[data-vertex-diff]').length:0}
+  function hideCtas(){var v=document.querySelector('vertex-player'),r=v&&v.shadowRoot;if(!hideCta||!r||r.querySelector('style[data-fk]'))return;var s=document.createElement('style');s.setAttribute('data-fk','');s.textContent='[data-vertex-trigger]:not([data-vertex-diff]){visibility:hidden!important;opacity:0!important;pointer-events:none!important}';r.appendChild(s)}
+  var until=Date.now()+60000,last=-1;(function watch(){hideCtas();var n=count();if(n!==last&&n>0){last=n;t({type:'variants',n:n})}if(Date.now()<until)setTimeout(watch,250)})();
+  function hook(v){
+    if(v.__flam)return;v.__flam=1;
+    v.addEventListener('vertex-ready',function(){hideCtas();t({type:'ready',variants:count()})});
+    v.addEventListener('vertex-error',function(e){var d=e.detail||{};if(d.recovered||d.severity==='warning'||/WebGPU/.test(d.message||''))return;t({type:'error',msg:String(d.message||d.code||'render error')})});
+    v.addEventListener('vertex-cta',function(e){t({type:'cta',url:(e.detail||{}).url||''})});
+    v.addEventListener('vertex-diff-change',function(e){t({type:'switch',diff:+((e.detail||{}).diff)||0})});
+  }
+  window.addEventListener('message',function(e){var d=e.data,r=root();if(!d||!d.flamCmd||!r)return;
+    if(d.flamCmd==='diff'){var b=r.querySelector('button[data-vertex-diff="'+(+d.i)+'"]');if(b)b.click();else t({type:'novariant',i:+d.i})}
+    if(d.flamCmd==='cta'){var els=r.querySelectorAll('[data-vertex-trigger]:not([data-vertex-diff])');for(var i=0;i<els.length;i++){if(getComputedStyle(els[i]).display!=='none'){els[i].click();return}}t({type:'nocta'})}});
+  new MutationObserver(function(){var v=document.querySelector('vertex-player');if(v)hook(v)}).observe(document.documentElement,{childList:true,subtree:true});
+  window.addEventListener('error',function(e){var s=e.target;if(s&&s.tagName==='SCRIPT')t({type:'error',msg:'Could not load '+s.src})},true);
+}
+const K={version:'1.1',os:OS,stub:STUB,log:[],slots:{},flows:[],maxLive:2,readyMs:12000};
+const tagOf=b=>b.tag||HEAD+(b.extra?b.extra.split('+').map(e=>EXTRA[e]).join(''):'')+'<script src='+b.src+'><\/script>';
+const doc=(id,b,hide)=>'<!doctype html><meta charset=utf-8><style>html,body{margin:0;height:100%;background:'+(b.bg||'#111')+';overflow:hidden}</style><script>('+bridge+')('+JSON.stringify(id)+','+!!hide+')<\/script>'+tagOf(b).replace(/^<!doctype html>/i,'');
+const live=()=>Object.values(K.slots).filter(s=>s.mounted).length;
+function note(slot,type,extra){K.log.push(Object.assign({slot,type,t:Math.round(performance.now())},extra||{}))}
+function fail(host,s,msg){s.error=msg;host.classList.add('fk-bad');if(!host.querySelector('.fk-warn'))host.insertAdjacentHTML('beforeend','<span class="fk-warn">Flick did not load</span>');note(s.id,'error',{msg});console.error('[flicks-kit] '+s.id+': '+msg)}
+function mount(host){
+  const id=host.dataset.slot,b=K.cfg.brands[host.dataset.brand];let s=K.slots[id]||(K.slots[id]={id,brand:host.dataset.brand,variant:0});
+  if(s.mounted)return;if(!b){fail(host,s,'unknown brand "'+host.dataset.brand+'"');return}
+  if(live()>=K.maxLive){s.waiting=true;return}
+  s.waiting=false;s.mounted=true;s.ready=false;s.error=null;host.classList.remove('fk-bad');host.querySelector('.fk-warn')?.remove();
+  const [bw,bh]=b.size||SIZE[b.ar||'square'],cover=host.dataset.fit==='cover';
+  if(STUB){host.insertAdjacentHTML('afterbegin','<div class="fk-stub">'+b.name+'<small>Flick stand-in, test mode</small></div>');s.ready=true;host.classList.add('rdy');note(id,'ready',{stub:true});return}
+  const f=document.createElement('iframe');f.title=b.name+' Flick';f.setAttribute('allow','autoplay; fullscreen');f.setAttribute('scrolling','no');
+  f.width=bw;f.height=bh;f.style.cssText='width:'+bw+'px;height:'+bh+'px';f.srcdoc=doc(id,b,host.dataset.cta==='native');
+  const fit=()=>{const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;const sc=cover?Math.max(w/bw,h/bh):Math.min(w/bw,h/bh);f.style.transform='translate('+(w-bw*sc)/2+'px,'+(h-bh*sc)/2+'px) scale('+sc+')'};
+  fit();s.ro=new ResizeObserver(fit);s.ro.observe(host);host.prepend(f);
+  s.timer=setTimeout(()=>{if(s.mounted&&!s.ready&&!s.error)fail(host,s,'no ready signal after '+K.readyMs+'ms from '+(b.src||'tag'))},K.readyMs);
+}
+function unmount(host){
+  const s=K.slots[host.dataset.slot];if(!s)return;s.waiting=false;if(!s.mounted)return;
+  clearTimeout(s.timer);s.ro&&s.ro.disconnect();s.mounted=false;s.ready=false;s.variant=0;host.classList.remove('rdy');
+  host.querySelectorAll('iframe,.fk-stub,.fk-warn').forEach(n=>n.remove());
+  document.querySelectorAll('.flick[data-slot]').forEach(h=>{const w=K.slots[h.dataset.slot];if(w&&w.waiting)mount(h)});
+}
+const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting?mount(e.target):unmount(e.target)),{rootMargin:'120px 0px'});
+K.scan=()=>document.querySelectorAll('.flick[data-slot]').forEach(h=>{if(!h.__fk){h.__fk=1;io.observe(h)}});
+const hostOf=id=>document.querySelector('.flick[data-slot="'+id+'"]');
+const send=(id,m)=>{const f=hostOf(id)?.querySelector('iframe');if(f)f.contentWindow.postMessage(m,'*')};
+K.switchVariant=(id,i)=>send(id,{flamCmd:'diff',i});
+K.pressCta=id=>send(id,{flamCmd:'cta'});
+window.addEventListener('message',e=>{
+  const m=e.data;if(!m||m.flam!==1)return;const s=K.slots[m.slot],host=hostOf(m.slot);
+  if(!s||!host||e.source!==host.querySelector('iframe')?.contentWindow)return;
+  if(m.type==='variants'){s.variants=Math.max(s.variants||0,m.n);note(m.slot,'variants',{n:m.n})}
+  else if(m.type==='ready'){s.ready=true;s.variants=Math.max(s.variants||0,m.variants||0);clearTimeout(s.timer);host.classList.add('rdy');note(m.slot,'ready',{variants:m.variants})}
+  else if(m.type==='error'){clearTimeout(s.timer);fail(host,s,m.msg)}
+  else if(m.type==='switch'){s.variant=m.diff;note(m.slot,'switch',{diff:m.diff});host.dispatchEvent(new CustomEvent('flick:switch',{detail:m.diff,bubbles:true}))}
+  else if(m.type==='cta'){note(m.slot,'cta',{url:m.url});K.cfg.onCta?K.cfg.onCta(m.slot,m.url,s.variant):window.open(m.url,'_blank','noopener')}
+  else note(m.slot,m.type);
+});
+K.go=id=>{
+  const fl=K.flows.find(f=>f.id===id);if(!fl)return;fl.go();K.redock&&K.redock();
+  setTimeout(()=>{K.scan();const el=document.querySelector('[data-flow="'+id+'"]')||hostOf(fl.slot);if(!el){console.error('[flicks-kit] flow "'+id+'" has no target on screen');return}
+    /* Scroll only the app's own scroller: scrollIntoView would also shift the page and the phone frame. */
+    const r=el.getBoundingClientRect();let sc=el.parentElement;while(sc&&!(/(auto|scroll)/.test(getComputedStyle(sc).overflowY)&&sc.scrollHeight>sc.clientHeight))sc=sc.parentElement;
+    if(sc){const c=sc.getBoundingClientRect();if(r.top<c.top-2||r.bottom>c.bottom+2){const z=c.height/(sc.clientHeight||1)||1;sc.scrollTo({top:sc.scrollTop+(r.top-c.top-(c.height-r.height)/2)/z,behavior:'smooth'})}}
+    el.classList.remove('fk-hl');void el.offsetWidth;el.classList.add('fk-hl');setTimeout(()=>el.classList.remove('fk-hl'),1800)},fl.settle||350);
+};
+function pill(root){
+  const b=document.createElement('button');b.className='fk-pill';b.setAttribute('data-flicks-button','');b.setAttribute('aria-expanded','false');b.innerHTML='Explore Flicks<svg width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const menu=document.createElement('div');menu.className='fk-menu';menu.setAttribute('role','menu');menu.hidden=true;
+  K.flows.forEach(f=>{const i=document.createElement('button');i.setAttribute('role','menuitem');i.dataset.go=f.id;i.textContent=f.label;i.onclick=()=>{open(false);K.go(f.id)};menu.appendChild(i)});
+  root.append(b,menu);let pos=null,drag=null,moved=false;
+  /* Layout size, not on-screen size: the root may sit inside a scaled phone frame. */
+  const box=()=>({width:root.clientWidth,height:root.clientHeight}),zoom=()=>root.getBoundingClientRect().width/(root.clientWidth||1)||1,clamp=(x,y)=>{const f=box();return{x:Math.min(Math.max(8,x),f.width-b.offsetWidth-8),y:Math.min(Math.max(8,y),f.height-b.offsetHeight-8)}};
+  function place(p){const f=box(),nav=parseFloat(getComputedStyle(root).getPropertyValue('--fk-nav'))||0;pos=clamp(p?p.x:12,p?p.y:f.height-nav-b.offsetHeight-14);b.style.left=pos.x+'px';b.style.top=pos.y+'px';
+    const up=pos.y>f.height/2;menu.style.left=Math.min(Math.max(8,pos.x),f.width-menu.offsetWidth-8)+'px';menu.style.top=up?'':pos.y+b.offsetHeight+6+'px';menu.style.bottom=up?f.height-pos.y+6+'px':'';menu.style.maxHeight=(up?pos.y:f.height-pos.y-b.offsetHeight)-20+'px'}
+  function open(v){menu.hidden=!v;b.setAttribute('aria-expanded',v);if(v)place(pos)}
+  b.addEventListener('pointerdown',e=>{b.setPointerCapture(e.pointerId);drag={x:pos.x,y:pos.y,sx:e.clientX,sy:e.clientY,z:zoom(),moved:false}});
+  b.addEventListener('pointermove',e=>{if(!drag)return;if(!drag.moved&&Math.hypot(e.clientX-drag.sx,e.clientY-drag.sy)<6)return;drag.moved=true;moved=true;open(false);place({x:drag.x+(e.clientX-drag.sx)/drag.z,y:drag.y+(e.clientY-drag.sy)/drag.z})});
+  b.addEventListener('pointerup',()=>{const d=drag;drag=null;if(d&&!d.moved)open(menu.hidden)});
+  b.addEventListener('pointercancel',()=>{drag=null});
+  document.addEventListener('pointerdown',e=>{if(!menu.hidden&&!menu.contains(e.target)&&e.target!==b&&!b.contains(e.target))open(false)},true);
+  new ResizeObserver(()=>place(moved?pos:null)).observe(root);place(null);
+  K.redock=()=>{open(false);if(!moved)place(null)};
+}
+K.init=cfg=>{
+  K.cfg=cfg;K.flows=cfg.flows;if(cfg.maxLive)K.maxLive=cfg.maxLive;
+  const st=document.createElement('style');st.textContent='.flick{position:relative;overflow:hidden;background:#111}.flick iframe{position:absolute;left:0;top:0;border:0;display:block;transform-origin:0 0;opacity:0;transition:opacity .4s}.flick.rdy iframe{opacity:1}.fk-stub{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:repeating-linear-gradient(45deg,#1d1d22 0 12px,#26262d 12px 24px);color:#fff;font:600 15px system-ui}.fk-stub small{font:400 11px system-ui;opacity:.7}.fk-warn{position:absolute;left:8px;bottom:8px;padding:4px 8px;border-radius:6px;background:#b00020;color:#fff;font:600 11px system-ui;z-index:2}.fk-hl{animation:fkhl 1.8s ease-out}@keyframes fkhl{0%,60%{box-shadow:0 0 0 3px var(--fk-accent,#fff),0 0 0 6px rgba(0,0,0,.35)}100%{box-shadow:0 0 0 3px transparent,0 0 0 6px transparent}}.fk-pill{position:absolute;z-index:95;display:flex;align-items:center;gap:6px;height:36px;padding:0 14px;border:0;border-radius:18px;background:var(--fk-bg,rgba(28,28,30,.92));color:var(--fk-fg,#fff);font:600 13px/1 var(--fk-font,system-ui);box-shadow:0 6px 20px rgba(0,0,0,.28);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;white-space:nowrap}.fk-pill::after{content:"";position:absolute;inset:-5px 0}.fk-pill[aria-expanded=true] svg{transform:rotate(180deg)}.fk-menu{position:absolute;z-index:96;width:200px;overflow:auto;padding:4px 0;border-radius:14px;background:var(--fk-bg,rgba(28,28,30,.96));box-shadow:0 10px 30px rgba(0,0,0,.35)}.fk-menu[hidden]{display:none}.fk-menu button{display:block;width:100%;min-height:44px;padding:0 16px;border:0;background:none;color:var(--fk-fg,#fff);font:500 14px var(--fk-font,system-ui);text-align:left;cursor:pointer}';
+  document.head.appendChild(st);pill(document.querySelector(cfg.root));K.scan();
+};
+window.FlicksKit=window.__demo=K;
+})();
+</script>
+<script>
+const DH='<svg class="dh" viewBox="0 0 24 24"><path fill="currentColor" d="M5.5 3h6.2c5 0 8.8 3.4 9.3 7.6H23v2h-2c-.4 4.6-4.2 8.4-9.3 8.4H5.5v-6.3H2.8v-2h2.7v-2H2.8v-2h2.7Zm2.6 2.2v3.5h10.2c-.6-2.3-3-3.5-6.6-3.5Zm0 5.5v2h10.6v-2Zm0 4v4.1h3.6c3.6 0 6-1.3 6.6-4.1Z"/></svg>';
+const money=n=>DH+n.toLocaleString('en-US');
+const off=p=>p.was?Math.round((1-p.p/p.was)*100):0;
+const STAR='<svg width="12" height="12" viewBox="0 0 24 24"><path fill="#f5a623" d="m12 2 3 6.6 7 .7-5.3 4.8 1.6 7.1L12 17.5 5.7 21.2l1.6-7.1L2 9.3l7-.7Z"/></svg>';
+function card(id,opt){const p=P[id];opt=opt||{};return `<button class="pc" data-pid="${id}" onclick="openPdp('${id}')"><div class="im"><img src="${p.img[0]}?width=400" alt="${p.brand} ${p.name}" loading="lazy"><span class="wl"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#404553" stroke-width="1.8"><path d="M12 20s-7-4.3-9.3-8.7C1.2 8.3 3 4.5 6.6 4.5c2 0 3.5 1.1 4.3 2.4h2.2c.8-1.3 2.3-2.4 4.3-2.4 3.6 0 5.4 3.8 3.9 6.8C19 15.7 12 20 12 20Z"/></svg></span>${opt.ad?'<span class="ad">Ad</span>':''}</div>${p.tag?`<span class="yf">${p.tag}${/Early/.test(p.tag)?' ⏳':''}</span>`:''}<div class="nm">${p.brand} ${p.name}</div>${p.r?`<div class="rt"><b>${p.r.toFixed(1)}</b>${STAR}<span>(${p.n})</span></div>`:''}<div class="pr"><span class="now">${money(p.p)}</span>${p.was?`<s>${p.was}</s><span class="off">${off(p)}% Off</span>`:''}</div>${p.rank?`<div class="rk">${p.rank}</div>`:''}<span class="xp">express</span></button>`}
+function mini(id){const p=P[id];return `<img src="${p.img[0]}?width=200" alt=""><span><span class="nm">${p.brand} ${p.name}</span><span class="now">${money(p.p)}</span></span>`}
+/* home */
+const HERO=[['a.nooncdn.com/mpcms/EN0001/assets/4010ce5d-3973-4972-859c-350d8a6e7e5c.png','Welcome offer'],['NIKE'],['a.nooncdn.com/mp-onsite/images/img_s1ens11t-en_mb_uae-camping-01.png','Camping and hiking'],['a.nooncdn.com/mpcms/EN0001/assets/bee229a1-3da6-44a2-b6a3-d3c6173cfa80.png','Featured']];
+hero.innerHTML=HERO.map(h=>h[0]==='NIKE'?`<div class="hcard flk" data-flow="hero"><button class="band" data-t="hero-band" onclick="go('store',{b:'nike'})"><div class="bw">NIKE</div><h3>Run the city<br>in every colour</h3><span class="chip">Yellow Friday · Up to 65% off</span></button><div class="flick" data-slot="hero-nike" data-brand="nike" data-cta="native"></div></div>`:`<div class="hcard"><img src="https://${h[0]}?width=800" alt="${h[1]}"></div>`).join('');
+hdots.innerHTML=HERO.map((_,i)=>`<i class="${i==1?'on':''}"></i>`).join('');
+hero.addEventListener('scroll',()=>{const i=Math.round(hero.scrollLeft/278);[...hdots.children].forEach((d,k)=>d.classList.toggle('on',k===i))},{passive:true});
+function centreHero(){const c=hero.children[1];hero.scrollLeft=c.offsetLeft-(hero.clientWidth-c.offsetWidth)/2}
+cats.innerHTML=CATS.map(c=>`<div class="cat"><span class="t"><img src="${A}${c[0]}.png?width=240" alt=""></span>${c[1]}</div>`).join('');
+fthumbs.innerHTML=['ua1','lev2','acer1'].map(id=>`<img src="${P[id].img[0]}?width=120" alt="">`).join('');
+yf.innerHTML=['nike2','ua1','lev1','adi1','nike6','lev3'].map(id=>card(id)).join('');
+sp.innerHTML=['anta1','ua3','nike3','anta2','ua2'].map(id=>card(id)).join('');
+/* search */
+document.getElementById('ba-strip').innerHTML=['ua1','ua2','ua3'].map(id=>`<button class="mini" onclick="openPdp('${id}')">${mini(id)}</button>`).join('');
+sgrid.innerHTML=['ua4','ua5','ua3','ua1','ua2','ua6'].map((id,i)=>card(id,{ad:i<2})).join('');
+/* router */
+const stack=['home'];let CUR=null;
+function show(v){document.querySelectorAll('.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  const dark=v==='finds';sb.classList.toggle('dark',dark);nav.style.display=dark?'none':'';hbar.style.background=dark?'#000':'';
+  document.querySelectorAll('.nav [data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab==='home'&&v==='home'));
+  navBase=(v==='pdp'?64+69:v==='finds'?118:64)+'px';app.style.setProperty('--fk-nav',navBase);
+  closeSheet();setTimeout(()=>{FlicksKit.scan();FlicksKit.redock&&FlicksKit.redock()},30)}
+function go(v,o){o=o||{};
+  if(v==='home'){stack.length=1;show('home');return}
+  if(v==='search'){sq.textContent=o.q||'under armour';document.getElementById('search-scroll').scrollTop=0}
+  if(v==='store'){const b=BRAND[o.b];document.getElementById('st-word').textContent=b.word;document.getElementById('st-head').textContent=b.head;stq.textContent='Search in '+b.name;
+    document.getElementById('st-grid').innerHTML=b.items.map(id=>card(id)).join('');document.getElementById('store-scroll').scrollTop=0}
+  if(stack[stack.length-1]!==v||v==='pdp'||v==='store')stack.push(v);show(v)}
+function back(){if(stack.length>1)stack.pop();const v=stack[stack.length-1];if(v==='pdp'&&CUR)fillPdp(CUR.id);show(v)}
+/* pdp */
+function fillPdp(id){const p=P[id];CUR=Object.assign({id},p);
+  gtrack.innerHTML=p.img.map(s=>`<img src="${s}?width=800" alt="${p.brand} ${p.name}">`).join('');gtrack.scrollLeft=0;
+  gdots.innerHTML=p.img.map((_,i)=>`<i class="${i?'':'on'}"></i>`).join('');
+  document.getElementById('pd-brand').textContent=p.brand;document.getElementById('pd-name').textContent=p.name;
+  document.getElementById('pd-rt').innerHTML=p.r?`<b>${p.r.toFixed(1)} ★</b><span>${p.n} ratings</span>`:'<span>New on noon</span>';
+  document.getElementById('pd-price').innerHTML=`<span class="now">${money(p.p)}</span>${p.was?`<s>${p.was.toFixed(2)}</s><span class="off">${off(p)}% OFF</span>`:''}`;
+  const t=document.getElementById('pd-tag');t.textContent=p.rank||p.tag||'';t.style.display=t.textContent?'inline-block':'none';
+  const sz=p.b==='acer'?['16GB / 512GB','8GB / 256GB']:/jeans/i.test(p.name)?['30W','32W','34W','36W']:/shoe|sneaker|trainer|defy|revolution|gazelle/i.test(p.name)?['40 EU','41 EU','42 EU','43 EU','44 EU','45 EU']:['S','M','L','XL','XXL'];
+  document.getElementById('pd-sizes').innerHTML=sz.map((s,i)=>`<button class="${i==2?'on':''}">${s}</button>`).join('');
+  document.getElementById('pd-ba-mini').innerHTML=mini('lev2');document.getElementById('pd-ba-mini').onclick=()=>openPdp('lev2');
+  fbt.innerHTML=(p.b==='levis'?['ua3','nike2','lev1']:['ua1','lev1','ua3']).map(x=>card(x)).join('');
+  gtrack.onscroll=()=>{const i=Math.round(gtrack.scrollLeft/gtrack.clientWidth);[...gdots.children].forEach((d,k)=>d.classList.toggle('on',k===i))}}
+function openPdp(id){fillPdp(id);document.getElementById('pdp-scroll').scrollTop=0;go('pdp')}
+/* finds */
+const FINDS=[{slot:'finds-zara',brand:'zara',seller:'Zara',cap:'New season layers, three ways',likes:'12.4K'},
+ {slot:'finds-acer',brand:'acer',seller:'Acer',cap:'Pick your Aspire, made for every day',likes:'3.1K',pid:'acer1'}];
+fscroll.innerHTML=FINDS.map((f,i)=>{const p=f.pid?P[f.pid]:null;
+ const body=p?`<img src="${p.img[0]}?width=200" alt=""><div class="t"><div class="nm">${p.brand} ${p.name}</div><div class="by">Sold by ${f.seller}</div><span class="now">${money(p.p)}</span></div><button class="go">Add to cart</button>`
+  :`<span style="width:62px;height:78px;border-radius:8px;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;letter-spacing:.1em;flex:none">ZARA</span><div class="t"><div class="nm">Zara</div><div class="by">New season looks</div></div><button class="go" data-follow>Follow</button>`;
+ return `<div class="fitem" data-flow="${i?'finds2':'finds'}"><div class="flick" data-slot="${f.slot}" data-brand="${f.brand}" data-fit="cover" data-cta="native"></div>
+ <div class="frail"><span><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M12 20s-7-4.3-9.3-8.7C1.2 8.3 3 4.5 6.6 4.5c2 0 3.5 1.1 4.3 2.4h2.2c.8-1.3 2.3-2.4 4.3-2.4 3.6 0 5.4 3.8 3.9 6.8C19 15.7 12 20 12 20Z"/></svg>${f.likes}</span><span><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M12 15V3m-4 4 4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>Share</span></div>
+ <div class="fseller"><b>${f.seller}</b>${f.cap}</div>
+ <div class="fcard" data-t="finds-product-${i}" onclick="findsTap(${i},event)">${body}</div></div>`}).join('');
+function findsTap(i,e){const f=FINDS[i];if(f.pid){sheetFor(f.pid);return}const b=e.currentTarget.querySelector('[data-follow]');b.textContent=b.textContent==='Follow'?'Following':'Follow';b.style.background=b.textContent==='Following'?'#eef0f5':'';b.style.color=b.textContent==='Following'?'#1d1d1f':''}
+function openFinds(i){go('finds');requestAnimationFrame(()=>{fscroll.scrollTop=i*fscroll.clientHeight;setTimeout(FlicksKit.scan,50)})}
+function sheetFor(id){const p=P[id];sheet.innerHTML=`<div class="grab"></div><div class="row"><img src="${p.img[0]}?width=300" alt=""><div><div class="nm">${p.brand} ${p.name}</div><span class="now">${money(p.p)}</span>${p.was?`<div style="font-size:13px;color:#7e859b"><s>${p.was}</s> <b style="color:#38ae04">${off(p)}% Off</b></div>`:''}<span class="xp">express</span></div></div><button class="add" data-t="sheet-add" onclick="addToCart(P['${id}']);closeSheet()">Add to cart</button><button class="more" onclick="openPdp('${id}')">View full details</button>`;openSheet()}
+const app=document.getElementById('app');let navBase='64px';
+function dock(px){app.style.setProperty('--fk-nav',px);FlicksKit.redock&&FlicksKit.redock()}
+function openSheet(){scrim.classList.add('on');sheet.classList.add('on');requestAnimationFrame(()=>dock((sheet.offsetHeight+4)+'px'))}
+function closeSheet(){const was=sheet.classList.contains('on');scrim.classList.remove('on');sheet.classList.remove('on');if(was)dock(navBase)}
+let cartN=0,tt;function addToCart(){cartN++;cartn.hidden=false;cartn.textContent=cartN;toast.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>toast.classList.remove('on'),2600)}
+/* clock */
+if(FlicksKit.os==='android')clk.textContent='12:30';
+/* Flicks */
+FlicksKit.init({root:'#app',maxLive:2,
+ brands:{
+  nike:{name:'Nike',ar:'square',bg:'#0f0f10',src:'https://native-ads-dev.appless.workers.dev/6a97885c9e74536944d35d53_dsefds/ad.js'},
+  levis:{name:"Levi's",ar:'square',bg:'#f2f2f2',src:'https://native-ads-dev.appless.workers.dev/6a96c6969e74536944c4167f_z64116/ad.js'},
+  zara:{name:'Zara',ar:'tall',bg:'#000',src:'https://native-ads-dev.appless.workers.dev/zara/ad.js'},
+  acer:{name:'Acer',ar:'tall',bg:'#000',src:'"https://storage.googleapis.com/bucket-fi-development-apps-5b0640d5/app/abc/videos/eeeu318dko8uchkx61k7dwza.js"'},
+  ua:{name:'Under Armour',ar:'square',bg:'#f2f2f2',tag:'<!doctype html>\n<meta charset=utf-8>\n<meta name=ad.orientation content=portrait,landscape>\n<script>window.clickTag="${CLICK_URL}";window.AD_CONFIG=window.AD_CONFIG||{};window.AD_CONFIG.dsp="dv360_3p";window.AD_CONFIG.macros={"publisher_id":"${PUBLISHER_ID}","universal_site_id":"${UNIVERSAL_SITE_ID}","exchange_id":"${EXCHANGE_ID}","app_bundle":"${BUNDLE_ID}","adsxt_publisher_id":"${ADSXT_PUBLISHER_ID}","adsxt_ad_system_domain":"${ADSXT_AD_SYSTEM_DOMAIN}","adstxt_ad_system_domain":"${ADSTXT_AD_SYSTEM_DOMAIN}","dsp_line_item_id":"${CAMPAIGN_ID}","dsp_insertion_order_id":"${INSERTION_ORDER_ID}","dsp_creative_id":"${CREATIVE_ID}","inventory_source_id":"${INVENTORY_SOURCE_EXTERNAL_ID}","auction_id":"${AUCTION_ID}","impression_id":"${IMPRESSION_ID}","geo_dma":"${GEO_DMA}","gdpr":"${GDPR}","source_url":"${SOURCE_URL}","source_url_enc":"${SOURCE_URL_ENC}"};window.AD_CONFIG.clickTracker={"mode":"clicktag","template":""};<\/script>\n<script src=https://flicks.flamapp.live/vq0vp6/ad.js><\/script>'}
+ },
+ flows:[
+  {id:'hero',label:'Homepage Hero Slider',slot:'hero-nike',go(){go('home');document.getElementById('home-scroll').scrollTop=0;centreHero()},
+   steps:[{name:'hero card opens the Nike store',tap:'[data-t=hero-band]',expect:'#v-store.on'},{name:'store product opens the product page',tap:'#st-grid .pc',expect:'#v-pdp.on'},{name:'Add to cart confirms',tap:'[data-t=add-to-cart]',expect:'[data-t=toast].on'},{name:'back returns to the store',tap:'#v-pdp [data-t=back]',expect:'#v-store.on'}]},
+  {id:'search',label:'Brand Ads in search',slot:'search-ua',go(){go('search',{q:'under armour'})},
+   steps:[{name:'Shop Under Armour opens the store',tap:'[data-t=ba-shop]',expect:'#v-store.on'},{name:'back returns to search',tap:'#v-store [data-t=back]',expect:'#v-search.on'},{name:'brand ad product opens its page',tap:'#ba-strip .mini',expect:'#v-pdp.on'}]},
+  {id:'pdp',label:'Brand Ads on product pages',slot:'pdp-levis',go(){openPdp('nike1');setTimeout(()=>{const s=document.getElementById('pdp-scroll'),c=document.querySelector('.pcard');s.scrollTop=c.offsetTop-70},60)},settle:450,
+   steps:[{name:"Shop Levi's opens the Levi's store",tap:'[data-t=pdp-ba-shop]',expect:'#v-store.on'},{name:'back returns to the product page',tap:'#v-store [data-t=back]',expect:'#v-pdp.on'}]},
+  {id:'finds',label:'noon finds',slot:'finds-zara',go(){openFinds(0)},settle:500,
+   steps:[{name:'product card opens the product sheet',tap:'[data-t=finds-product-1]',expect:'#sheet.on'},{name:'Add to cart confirms',tap:'[data-t=sheet-add]',expect:'[data-t=toast].on'}]}
+ ],
+ onCta(slot){if(window.__ctaT&&Date.now()-window.__ctaT<900)return;window.__ctaT=Date.now();const b={'hero-nike':'nike','search-ua':'ua','pdp-levis':'levis','finds-acer':'acer'}[slot];if(b)go('store',{b});}
+});
+function fitPhone(){const ph=document.querySelector('.phone');if(innerWidth<=760){ph.style.transform='';return}const s=Math.min(1,(innerHeight-24)/866,(innerWidth-24)/412);ph.style.transform=s<1?`scale(${s})`:''}
+fitPhone();addEventListener('resize',fitPhone);
+requestAnimationFrame(centreHero);
+</script>
+</body></html>
